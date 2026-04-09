@@ -15,17 +15,31 @@ def apply_leave(username, reason, start_date, end_date, raw_message="", leave_ca
 
     db.commit()
 
-def approve_leave(leave_id):
+def update_leave_status(leave_id, status):
     db = get_db()
     cursor = db.cursor()
 
     cursor.execute(
-        "UPDATE leave_requests SET status='approved' WHERE id=?",
-        (leave_id,)
+        "UPDATE leave_requests SET status=? WHERE id=?",
+        (status, leave_id)
     )
+    if cursor.rowcount == 0:
+        return False
+
     db.commit()
+    return True
+
+
+def approve_leave(leave_id):
+    return update_leave_status(leave_id, "approved")
+
+
+def reject_leave(leave_id):
+    return update_leave_status(leave_id, "rejected")
 
 def get_all_leaves():
     db = get_db()
     cursor = db.cursor()
-    return cursor.execute("SELECT * FROM leave_requests").fetchall()
+    return cursor.execute(
+        "SELECT * FROM leave_requests ORDER BY id DESC"
+    ).fetchall()

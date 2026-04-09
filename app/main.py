@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 import logging
 import traceback
@@ -32,6 +33,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
 # use safe templates helper (centralized)
 templates = get_templates(os.path.join(BASE_DIR, "templates"))
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+	return FileResponse(
+		os.path.join(BASE_DIR, "static", "mist_logo.jpg"),
+		media_type="image/jpeg",
+	)
 
 
 # Exception-logging middleware: captures traceback + request info to file

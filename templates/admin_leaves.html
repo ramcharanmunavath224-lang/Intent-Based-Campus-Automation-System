@@ -201,6 +201,25 @@
             padding: 28px;
         }
 
+        .flash {
+            padding: 16px 18px;
+            border-radius: 18px;
+            border: 1px solid;
+            font-weight: 600;
+        }
+
+        .flash.success {
+            color: #d1fae5;
+            background: rgba(52, 211, 153, 0.12);
+            border-color: rgba(52, 211, 153, 0.22);
+        }
+
+        .flash.error {
+            color: #ffe4e6;
+            background: rgba(251, 113, 133, 0.12);
+            border-color: rgba(251, 113, 133, 0.22);
+        }
+
         .section-head {
             display: flex;
             justify-content: space-between;
@@ -414,6 +433,14 @@
             </div>
         </section>
 
+        {% if msg %}
+        <div class="flash {% if msg in ['leave_approved', 'leave_rejected'] %}success{% else %}error{% endif %}" id="message">
+            {% if msg == "leave_approved" %}Leave request approved successfully.{% endif %}
+            {% if msg == "leave_rejected" %}Leave request rejected successfully.{% endif %}
+            {% if msg == "leave_missing" %}Leave request not found.{% endif %}
+        </div>
+        {% endif %}
+
         <section class="panel section">
             <div class="section-head">
                 <h2>All Leave Requests</h2>
@@ -479,5 +506,12 @@
             {% endif %}
         </section>
     </div>
+
+    <script>
+        setTimeout(() => {
+            const msg = document.getElementById("message");
+            if (msg) msg.style.display = "none";
+        }, 3200);
+    </script>
 </body>
 </html>

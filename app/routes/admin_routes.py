@@ -8,6 +8,7 @@ from app.utils.safe_templates import get_templates
 
 from app.database import get_db
 from app.services.auth_service import create_user, delete_user, reset_user_password, update_user_details
+from app.services.leave_service import approve_leave as approve_leave_request, get_all_leaves, reject_leave as reject_leave_request
 from app.services.pdf_service import generate_leave_letter_pdf_bytes
 
 router = APIRouter()
@@ -240,13 +241,10 @@ def view_leaves(request: Request):
     if request.session.get("role") != "admin":
         return RedirectResponse("/login", status_code=303)
 
-    db = get_db()
-    cursor = db.cursor()
+    leaves = get_all_leaves()
+    msg = request.query_params.get("msg")
 
-    cursor.execute("SELECT * FROM leave_requests")
-    leaves = cursor.fetchall()
-
-    return templates.TemplateResponse(request, "admin_leaves.html", {"leaves": leaves})
+    return templates.TemplateResponse(request, "admin_leaves.html", {"leaves": leaves, "msg": msg})
 
 
 @router.post("/admin/approve-leave")
@@ -255,13 +253,10 @@ def approve_leave(request: Request, id: int = Form(...)):
     if request.session.get("role") != "admin":
         return RedirectResponse("/login", status_code=303)
 
-    db = get_db()
-    cursor = db.cursor()
-
-    cursor.execute("UPDATE leave_requests SET status='approved' WHERE id=?", (id,))
-    db.commit()
-
-    return RedirectResponse("/admin/leaves", status_code=303)
+    approved = approve_leave_request(id)
+    if approved:
+        return RedirectResponse("/admin/leaves?msg=leave_approved", status_code=303)
+    return RedirectResponse("/admin/leaves?msg=leave_missing", status_code=303)
 
 
 @router.post("/admin/reject-leave")
@@ -270,13 +265,10 @@ def reject_leave(request: Request, id: int = Form(...)):
     if request.session.get("role") != "admin":
         return RedirectResponse("/login", status_code=303)
 
-    db = get_db()
-    cursor = db.cursor()
-
-    cursor.execute("UPDATE leave_requests SET status='rejected' WHERE id=?", (id,))
-    db.commit()
-
-    return RedirectResponse("/admin/leaves", status_code=303)
+    rejected = reject_leave_request(id)
+    if rejected:
+        return RedirectResponse("/admin/leaves?msg=leave_rejected", status_code=303)
+    return RedirectResponse("/admin/leaves?msg=leave_missing", status_code=303)
 
 
 @router.get("/admin/download-leave/{leave_id}")
