@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        :root{--bg1:#1e3c72;--bg2:#2a5298;--panel:rgba(255,255,255,.12);--border:rgba(255,255,255,.18);--text:#eef4ff;--muted:#d5def8;--accent:#00c6ff;--accent2:#0072ff;--warn:#f59e0b;--ok:#34d399;--danger:#fb7185;--shadow:0 30px 80px rgba(8,15,40,.34);--shadow-soft:0 16px 40px rgba(8,15,40,.18);--ui:"Segoe UI Variable","Segoe UI","Inter","Helvetica Neue",Arial,sans-serif;--display:"Aptos Display","Segoe UI Variable","Segoe UI","Helvetica Neue",Arial,sans-serif}
+        *{box-sizing:border-box} body{margin:0;min-height:100vh;font-family:var(--ui);color:var(--text);background:radial-gradient(circle at 12% 18%,rgba(255,255,255,.14),transparent 22%),radial-gradient(circle at 88% 14%,rgba(155,81,224,.18),transparent 26%),linear-gradient(120deg,var(--bg1) 0%,var(--bg2) 48%,#6a11cb 100%);padding:28px} body::before,body::after{content:"";position:fixed;border-radius:999px;filter:blur(12px);pointer-events:none;opacity:.55} body::before{width:260px;height:260px;background:rgba(255,255,255,.12);top:36px;left:-48px} body::after{width:320px;height:320px;background:rgba(106,17,203,.22);right:-80px;bottom:12px}
+        .shell{width:min(1380px,100%);margin:0 auto;display:grid;gap:24px}.panel,.topbar{position:relative;overflow:hidden;background:var(--panel);border:1px solid var(--border);border-radius:30px;box-shadow:var(--shadow);backdrop-filter:blur(24px)}.panel::before,.topbar::before{content:"";position:absolute;inset:1px 1px auto 1px;height:42%;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0));pointer-events:none}
+        .topbar{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:24px 28px}.brand{display:grid;gap:6px}.eyebrow{margin:0;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;font-size:.72rem;font-weight:700}
+        .title{margin:0;font-family:var(--display);font-size:clamp(2.2rem,4vw,3.2rem);letter-spacing:-.04em;line-height:.98}.subtitle{margin:0;color:var(--muted);max-width:60ch;line-height:1.6}
+        .top-actions,.actions,.search-form{display:flex;gap:12px;flex-wrap:wrap}.top-link,.action-btn,.submit,.danger-btn{display:inline-flex;align-items:center;justify-content:center;border-radius:16px;padding:14px 18px;text-decoration:none;font:inherit;font-weight:700;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease}
+        .top-link{min-width:132px;border-radius:999px}.top-link.secondary,.action-btn{color:var(--text);background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.14)}.top-link.primary,.submit{color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 20px 40px rgba(0,114,255,.28)}.danger-btn{color:#fff;background:linear-gradient(135deg,#fb7185,#e11d48);border:0;box-shadow:0 12px 24px rgba(225,29,72,.18)}
+        .top-link:hover,.nav-button:hover,.nav-anchor:hover,.nav-button.active,.submit:hover,.danger-btn:hover,.action-btn:hover{transform:translateY(-2px);filter:brightness(1.03)}
+        .layout{display:grid;grid-template-columns:300px 1fr;gap:24px;align-items:start}.sidebar{padding:24px;display:grid;gap:22px;position:sticky;top:24px}.nav-title{margin:0 0 8px;font-size:.82rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+        .nav-list{display:grid;gap:10px}.nav-button,.nav-anchor{width:100%;border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:16px 18px;text-align:left;background:rgba(255,255,255,.08);color:var(--text);text-decoration:none;font:inherit;cursor:pointer;box-shadow:var(--shadow-soft)}.nav-button strong,.nav-anchor strong{display:block;margin-bottom:4px;font-size:1rem}.nav-button span,.nav-anchor span{color:var(--muted);font-size:.88rem;line-height:1.45}.nav-button:hover,.nav-anchor:hover,.nav-button.active{background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.08));border-color:rgba(255,255,255,.24)}
+        .sidebar-note{padding:18px;border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.16),rgba(255,255,255,.06));border:1px solid rgba(255,255,255,.16);box-shadow:var(--shadow-soft)}.sidebar-note h3{margin:0 0 6px;font-family:var(--display);font-size:1.05rem}.sidebar-note p{margin:0;color:var(--muted);line-height:1.55;font-size:.92rem}
+        .content{display:grid;gap:24px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}.stat-card{padding:22px;border-radius:24px;background:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,.06));border:1px solid rgba(255,255,255,.14);box-shadow:var(--shadow-soft)}.stat-card span{display:block;margin-bottom:8px;color:var(--muted);font-size:.84rem;font-weight:600}.stat-card strong{font-family:var(--display);font-size:2.1rem;letter-spacing:-.04em}
+        .flash{padding:16px 18px;border-radius:18px;border:1px solid;font-weight:600}.flash.success{color:#d1fae5;background:rgba(52,211,153,.12);border-color:rgba(52,211,153,.22)}.flash.error{color:#ffe4e6;background:rgba(251,113,133,.12);border-color:rgba(251,113,133,.22)}
+        .section{padding:28px}.section-head{display:flex;justify-content:space-between;align-items:baseline;gap:14px;margin-bottom:20px}.section-head h2{margin:0;font-family:var(--display);font-size:1.5rem;letter-spacing:-.03em}.section-head p,.toolbar-note,.field-note,.notice-meta,.empty{margin:0;color:var(--muted);font-size:.92rem}.hidden{display:none}
+        .toolbar{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.field{display:grid;gap:8px}.field.full{grid-column:1/-1}.field label{color:var(--muted);font-size:.88rem;font-weight:600}.field-note{font-size:.8rem;line-height:1.45}
+        .input,.select,.textarea{width:100%;border:1px solid rgba(148,163,184,.18);border-radius:16px;padding:15px 16px;background:rgba(255,255,255,.94);color:#111827;font:inherit;outline:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.9);transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease}.textarea{min-height:130px;resize:vertical}.input:focus,.select:focus,.textarea:focus{border-color:rgba(0,198,255,.55);box-shadow:0 0 0 4px rgba(0,198,255,.14);transform:translateY(-1px)}
+        .table-wrap{overflow-x:auto;border-radius:20px;border:1px solid rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)} table{width:100%;border-collapse:collapse;min-width:1100px;background:rgba(13,24,55,.32)} th,td{padding:16px 14px;text-align:left;border-bottom:1px solid rgba(255,255,255,.08);font-size:.93rem} th{color:#f8fbff;text-transform:uppercase;letter-spacing:.1em;font-size:.77rem} td{color:#e2e8f0;font-weight:500} tbody tr:hover{background:rgba(255,255,255,.07)}
+        .role-badge{display:inline-flex;align-items:center;justify-content:center;min-width:90px;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.16);color:#eef4ff;font-size:.8rem;font-weight:700;text-transform:capitalize}
+        .notice-list{display:grid;gap:14px}.notice-item{padding:18px;border-radius:18px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);display:grid;gap:10px;box-shadow:var(--shadow-soft)}.notice-meta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:.84rem}.notice-item h3{margin:0;font-family:var(--display);font-size:1.08rem}.notice-item p{margin:0;color:#dbe7ff;line-height:1.6;white-space:pre-wrap}.empty{padding:24px;border-radius:18px;text-align:center;background:rgba(255,255,255,.08)}
+        @media (max-width:1180px){.layout{grid-template-columns:1fr}.sidebar{position:static}} @media (max-width:900px){body{padding:18px}.topbar,.section-head{flex-direction:column;align-items:flex-start}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.form-grid{grid-template-columns:1fr}} @media (max-width:620px){.stats{grid-template-columns:1fr}}
+    </style>
+</head>
+<body data-active-section="{% if selected_user %}editSection{% else %}usersSection{% endif %}">
+    {% set total_users = users|length %}
+    {% set admin_stats = namespace(admins=0, students=0) %}
+    {% for user in users %}
+        {% if user["role"] == "admin" %}{% set admin_stats.admins = admin_stats.admins + 1 %}{% else %}{% set admin_stats.students = admin_stats.students + 1 %}{% endif %}
+    {% endfor %}
+    <div class="shell">
+        <header class="topbar">
+            <div class="brand">
+                <p class="eyebrow">Campus Automation</p>
+                <h1 class="title">Admin Control Center</h1>
+                <p class="subtitle">Manage users, update details, reset passwords, and publish notices from one premium admin workspace.</p>
+            </div>
+            <div class="top-actions">
+                <a class="top-link secondary" href="/admin/leaves">Review Leaves</a>
+                <a class="top-link primary" href="/logout">Logout</a>
+            </div>
+        </header>
+
+        <div class="layout">
+            <aside class="panel sidebar">
+                <div>
+                    <p class="nav-title">Workspace</p>
+                    <div class="nav-list">
+                        <button type="button" class="nav-button active" data-target="usersSection"><strong>User Directory</strong><span>Search, review, edit, and remove user accounts.</span></button>
+                        <button type="button" class="nav-button" data-target="createSection"><strong>Create User</strong><span>Add new students and administrators with complete records.</span></button>
+                        <button type="button" class="nav-button" data-target="editSection"><strong>Edit & Reset</strong><span>Update student details and reset forgotten passwords.</span></button>
+                        <button type="button" class="nav-button" data-target="noticeSection"><strong>Notice Board</strong><span>Create student-facing announcements and remove old notices.</span></button>
+                        <a class="nav-anchor" href="/admin/leaves"><strong>Leave Decisions</strong><span>Approve, reject, and download official leave letters.</span></a>
+                    </div>
+                </div>
+                <div class="sidebar-note">
+                    <h3>Admin focus</h3>
+                    <p>Use search to find students quickly, keep profile data complete for bonafide certificates, and publish timely notices on the student dashboard.</p>
+                </div>
+            </aside>
+
+            <main class="content">
+                <section class="stats">
+                    <div class="panel stat-card"><span>Total users</span><strong>{{ total_users }}</strong></div>
+                    <div class="panel stat-card"><span>Students</span><strong>{{ admin_stats.students }}</strong></div>
+                    <div class="panel stat-card"><span>Administrators</span><strong>{{ admin_stats.admins }}</strong></div>
+                    <div class="panel stat-card"><span>Notices</span><strong>{{ notices|length }}</strong></div>
+                </section>
+
+                {% if msg %}
+                {% if msg in ["success", "deleted", "user_updated", "password_reset", "notice_created", "notice_deleted"] %}
+                <div class="flash success" id="message">
+                    {% if msg == "success" %}User created successfully.{% endif %}
+                    {% if msg == "deleted" %}User deleted successfully.{% endif %}
+                    {% if msg == "user_updated" %}User details updated successfully.{% endif %}
+                    {% if msg == "password_reset" %}Password reset successfully.{% endif %}
+                    {% if msg == "notice_created" %}Notice published successfully.{% endif %}
+                    {% if msg == "notice_deleted" %}Notice deleted successfully.{% endif %}
+                </div>
+                {% else %}
+                <div class="flash error" id="message">
+                    {% if msg in ["exists", "Username exists"] %}User already exists.{% elif msg == "student_details_required" %}Student details are required for bonafide generation.{% elif msg == "password_required" %}Please enter a new password before resetting.{% elif msg == "notice_required" %}Both notice title and content are required.{% elif msg == "notice_missing" %}Notice not found.{% else %}User not found.{% endif %}
+                </div>
+                {% endif %}
+                {% endif %}
+
+                <section id="usersSection" class="panel section">
+                    <div class="section-head"><h2>User Directory</h2><p>Search and manage registered campus users from one table.</p></div>
+                    <div class="toolbar">
+                        <form method="get" action="/admin" class="search-form">
+                            <input class="input" type="text" name="search" value="{{ search }}" placeholder="Search by username, name, department, course...">
+                            <button class="submit" type="submit">Search User</button>
+                            {% if search %}<a class="action-btn" href="/admin">Clear Search</a>{% endif %}
+                        </form>
+                        <div class="toolbar-note">{% if search %}Showing results for "{{ search }}".{% else %}Showing all users.{% endif %}</div>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Username</th><th>Full Name</th><th>Roll Number</th><th>Role</th><th>Department</th><th>Course</th><th>Year / Semester</th><th>Action</th></tr></thead>
+                            <tbody>
+                                {% for user in users %}
+                                <tr>
+                                    <td>{{ user["username"] }}</td>
+                                    <td>{{ user["full_name"] or "-" }}</td>
+                                    <td>{{ user["roll_number"] or "-" }}</td>
+                                    <td><span class="role-badge">{{ user["role"] }}</span></td>
+                                    <td>{{ user["department"] or "-" }}</td>
+                                    <td>{{ user["course"] or "-" }}</td>
+                                    <td>{{ user["year_semester"] or "-" }}</td>
+                                    <td><div class="actions"><a class="action-btn" href="/admin?edit={{ user['username'] }}">Edit</a><form class="inline-form" method="post" action="/admin/delete-user"><input type="hidden" name="username" value="{{ user['username'] }}"><button class="danger-btn" type="submit" data-username="{{ user['username'] }}" onclick="return confirmDelete(this.dataset.username);">Delete</button></form></div></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="createSection" class="panel section hidden">
+                    <div class="section-head"><h2>Create New User</h2><p>Add new accounts with complete details for future certificates and records.</p></div>
+                    <form method="post" action="/admin/create-user" autocomplete="off" class="form-grid">
+                        <input type="text" name="fakeuser" style="display:none"><input type="password" name="fakepass" style="display:none">
+                        <div class="field"><label for="create_username">Username</label><input id="create_username" class="input" type="text" name="username" placeholder="Enter username" required autocomplete="off"></div>
+                        <div class="field"><label for="create_role">Role</label><select id="create_role" class="select role-selector" name="role"><option value="student">Student</option><option value="admin">Admin</option></select></div>
+                        <div class="field full"><label for="create_password">Password</label><input id="create_password" class="input" type="password" name="password" placeholder="Create password" required autocomplete="new-password"></div>
+                        <div class="field"><label for="create_full_name">Full Name</label><input id="create_full_name" class="input student-detail" type="text" name="full_name" placeholder="Enter full name"></div>
+                        <div class="field"><label for="create_roll_number">Roll Number</label><input id="create_roll_number" class="input student-detail" type="text" name="roll_number" placeholder="Enter roll number"></div>
+                        <div class="field"><label for="create_department">Department</label><input id="create_department" class="input student-detail" type="text" name="department" placeholder="Enter department"></div>
+                        <div class="field"><label for="create_course">Course</label><input id="create_course" class="input student-detail" type="text" name="course" placeholder="Enter course"></div>
+                        <div class="field full"><label for="create_year_semester">Year / Semester</label><input id="create_year_semester" class="input student-detail" type="text" name="year_semester" placeholder="Example: 3rd Year / 6th Semester"><p class="field-note">These student fields are used for bonafide certificate generation and should be filled for every student account.</p></div>
+                        <div class="field full"><button class="submit" type="submit">Create Account</button></div>
+                    </form>
+                </section>
+
+                <section id="editSection" class="panel section hidden">
+                    <div class="section-head"><h2>Edit Details & Reset Password</h2><p>Select a user from the directory or open one directly with the edit action.</p></div>
+                    {% if selected_user %}
+                    <div class="toolbar"><div class="toolbar-note">Editing user: <strong>{{ selected_user["username"] }}</strong></div><a class="action-btn" href="/admin">Done</a></div>
+                    <form method="post" action="/admin/update-user" class="form-grid">
+                        <input type="hidden" name="username" value="{{ selected_user['username'] }}">
+                        <div class="field"><label>Username</label><input class="input" type="text" value="{{ selected_user['username'] }}" readonly></div>
+                        <div class="field"><label for="edit_role">Role</label><select id="edit_role" class="select role-selector" name="role"><option value="student" {% if selected_user["role"] == "student" %}selected{% endif %}>Student</option><option value="admin" {% if selected_user["role"] == "admin" %}selected{% endif %}>Admin</option></select></div>
+                        <div class="field"><label for="edit_full_name">Full Name</label><input id="edit_full_name" class="input student-detail" type="text" name="full_name" value="{{ selected_user['full_name'] or '' }}"></div>
+                        <div class="field"><label for="edit_roll_number">Roll Number</label><input id="edit_roll_number" class="input student-detail" type="text" name="roll_number" value="{{ selected_user['roll_number'] or '' }}"></div>
+                        <div class="field"><label for="edit_department">Department</label><input id="edit_department" class="input student-detail" type="text" name="department" value="{{ selected_user['department'] or '' }}"></div>
+                        <div class="field"><label for="edit_course">Course</label><input id="edit_course" class="input student-detail" type="text" name="course" value="{{ selected_user['course'] or '' }}"></div>
+                        <div class="field full"><label for="edit_year_semester">Year / Semester</label><input id="edit_year_semester" class="input student-detail" type="text" name="year_semester" value="{{ selected_user['year_semester'] or '' }}"></div>
+                        <div class="field full"><button class="submit" type="submit">Save User Details</button></div>
+                    </form>
+                    <div style="height:18px;"></div>
+                    <form method="post" action="/admin/reset-password" class="form-grid">
+                        <input type="hidden" name="username" value="{{ selected_user['username'] }}">
+                        <div class="field full"><label for="new_password">New Password</label><input id="new_password" class="input" type="password" name="new_password" placeholder="Enter a new password for this user"><p class="field-note">Use this when a student forgets their password. The new password takes effect immediately.</p></div>
+                        <div class="field full"><button class="submit" type="submit">Reset Password</button></div>
+                    </form>
+                    {% else %}
+                    <div class="empty">Choose an Edit action from the user directory to update details or reset a password.</div>
+                    {% endif %}
+                </section>
+
+                <section id="noticeSection" class="panel section hidden">
+                    <div class="section-head"><h2>Notice Board</h2><p>Publish announcements that appear directly on the student dashboard.</p></div>
+                    <form method="post" action="/admin/create-notice" class="form-grid">
+                        <div class="field full"><label for="notice_title">Notice Title</label><input id="notice_title" class="input" type="text" name="title" placeholder="Example: Mid-term examinations start next Monday" required></div>
+                        <div class="field full"><label for="notice_content">Notice Content</label><textarea id="notice_content" class="textarea" name="content" placeholder="Write the full notice for students..." required></textarea></div>
+                        <div class="field full"><button class="submit" type="submit">Publish Notice</button></div>
+                    </form>
+                    <div style="height:18px;"></div>
+                    {% if notices %}
+                    <div class="notice-list">
+                        {% for notice in notices %}
+                        <article class="notice-item">
+                            <div class="notice-meta"><span>Posted by {{ notice["created_by"] }}</span><span>{{ notice["created_at"] }}</span></div>
+                            <h3>{{ notice["title"] }}</h3>
+                            <p>{{ notice["content"] }}</p>
+                            <div class="actions"><form class="inline-form" method="post" action="/admin/delete-notice"><input type="hidden" name="notice_id" value="{{ notice['id'] }}"><button class="danger-btn" type="submit">Delete Notice</button></form></div>
+                        </article>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty">No notices published yet. Create the first student announcement above.</div>
+                    {% endif %}
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const navButtons=document.querySelectorAll(".nav-button");
+        const sections=document.querySelectorAll(".section");
+        const roleSelectors=document.querySelectorAll(".role-selector");
+        function showSection(targetId){sections.forEach(section=>section.classList.toggle("hidden",section.id!==targetId));navButtons.forEach(button=>button.classList.toggle("active",button.dataset.target===targetId))}
+        function confirmDelete(username){return confirm(`Delete user ${username}?`)}
+        function syncStudentFieldRules(roleSelect){const form=roleSelect.closest("form");if(!form)return;const isStudent=roleSelect.value==="student";form.querySelectorAll(".student-detail").forEach(field=>{field.required=isStudent})}
+        navButtons.forEach(button=>button.addEventListener("click",()=>showSection(button.dataset.target)));
+        roleSelectors.forEach(select=>{syncStudentFieldRules(select);select.addEventListener("change",()=>syncStudentFieldRules(select))});
+        showSection(document.body.dataset.activeSection);
+        setTimeout(()=>{const msg=document.getElementById("message");if(msg)msg.style.display="none"},3200);
+    </script>
+</body>
+</html>

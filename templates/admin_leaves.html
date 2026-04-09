@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Leave Requests</title>
+    <style>
+        :root {
+            --bg-main: #1e3c72;
+            --bg-soft: #2a5298;
+            --panel: rgba(255, 255, 255, 0.12);
+            --panel-border: rgba(255, 255, 255, 0.18);
+            --text-main: #eef4ff;
+            --text-soft: #d5def8;
+            --accent: #00c6ff;
+            --accent-strong: #0072ff;
+            --success: #34d399;
+            --warning: #fbbf24;
+            --danger: #fb7185;
+            --info: #7dd3fc;
+            --shadow: 0 30px 80px rgba(8, 15, 40, 0.34);
+            --shadow-soft: 0 16px 40px rgba(8, 15, 40, 0.18);
+            --font-ui: "Segoe UI Variable", "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif;
+            --font-display: "Aptos Display", "Segoe UI Variable", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+            --radius-xl: 30px;
+            --radius-lg: 22px;
+            --radius-md: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: var(--font-ui);
+            color: var(--text-main);
+            background:
+                radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.14), transparent 22%),
+                radial-gradient(circle at 88% 14%, rgba(155, 81, 224, 0.18), transparent 26%),
+                linear-gradient(120deg, var(--bg-main) 0%, var(--bg-soft) 48%, #6a11cb 100%);
+            padding: 28px;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            border-radius: 999px;
+            filter: blur(12px);
+            pointer-events: none;
+            opacity: 0.55;
+        }
+
+        body::before {
+            width: 260px;
+            height: 260px;
+            background: rgba(255, 255, 255, 0.12);
+            top: 36px;
+            left: -48px;
+        }
+
+        body::after {
+            width: 320px;
+            height: 320px;
+            background: rgba(106, 17, 203, 0.22);
+            right: -80px;
+            bottom: 12px;
+        }
+
+        .shell {
+            width: min(1340px, 100%);
+            margin: 0 auto;
+            display: grid;
+            gap: 24px;
+        }
+
+        .topbar,
+        .panel {
+            position: relative;
+            overflow: hidden;
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(24px);
+        }
+
+        .topbar::before,
+        .panel::before {
+            content: "";
+            position: absolute;
+            inset: 1px 1px auto 1px;
+            height: 42%;
+            border-radius: inherit;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0));
+            pointer-events: none;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 18px;
+            padding: 24px 28px;
+        }
+
+        .brand {
+            display: grid;
+            gap: 6px;
+        }
+
+        .eyebrow {
+            margin: 0;
+            color: var(--text-soft);
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        .title {
+            margin: 0;
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 4vw, 3rem);
+            letter-spacing: -0.04em;
+            line-height: 0.98;
+        }
+
+        .subtitle {
+            margin: 0;
+            color: var(--text-soft);
+            line-height: 1.6;
+            max-width: 64ch;
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .pill-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 128px;
+            padding: 12px 18px;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: transform 0.2s ease;
+        }
+
+        .pill-link.secondary {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+        }
+
+        .pill-link.primary {
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+            box-shadow: 0 20px 40px rgba(0, 114, 255, 0.28);
+        }
+
+        .pill-link:hover {
+            transform: translateY(-2px);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .stat-card {
+            padding: 22px;
+            border-radius: 24px;
+            background: linear-gradient(160deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06));
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .stat-card span {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-soft);
+            font-size: 0.84rem;
+            font-weight: 600;
+        }
+
+        .stat-card strong {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            letter-spacing: -0.04em;
+        }
+
+        .section {
+            padding: 28px;
+        }
+
+        .section-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .section-head h2 {
+            margin: 0;
+            font-family: var(--font-display);
+            font-size: 1.45rem;
+            letter-spacing: -0.03em;
+        }
+
+        .section-head p {
+            margin: 0;
+            color: var(--text-soft);
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 920px;
+            background: rgba(13, 24, 55, 0.32);
+        }
+
+        th,
+        td {
+            padding: 16px 14px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 0.93rem;
+        }
+
+        th {
+            color: #f8fbff;
+            font-size: 0.77rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        td {
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 98px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: capitalize;
+        }
+
+        .status-pending {
+            background: rgba(251, 191, 36, 0.14);
+            color: #fde68a;
+        }
+
+        .status-approved {
+            background: rgba(52, 211, 153, 0.14);
+            color: #c6f6df;
+        }
+
+        .status-rejected {
+            background: rgba(251, 113, 133, 0.14);
+            color: #fecdd3;
+        }
+
+        .action-stack {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .inline-form {
+            margin: 0;
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 12px;
+            padding: 10px 14px;
+            color: #fff;
+            font: inherit;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.03);
+        }
+
+        .btn-approve {
+            background: linear-gradient(135deg, #34d399, #059669);
+            box-shadow: 0 12px 24px rgba(5, 150, 105, 0.18);
+        }
+
+        .btn-reject {
+            background: linear-gradient(135deg, #fb7185, #e11d48);
+            box-shadow: 0 12px 24px rgba(225, 29, 72, 0.18);
+        }
+
+        .btn-download {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.12);
+            color: #dff4ff;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+        }
+
+        .empty {
+            padding: 28px;
+            border-radius: 20px;
+            text-align: center;
+            color: var(--text-soft);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        @media (max-width: 980px) {
+            .stats {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 820px) {
+            body {
+                padding: 18px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .section-head {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 620px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% set stats = namespace(total=leaves|length, pending=0, approved=0, rejected=0) %}
+    {% for leave in leaves %}
+        {% if leave[5]|lower == "pending" %}
+            {% set stats.pending = stats.pending + 1 %}
+        {% elif leave[5]|lower == "approved" %}
+            {% set stats.approved = stats.approved + 1 %}
+        {% elif leave[5]|lower == "rejected" %}
+            {% set stats.rejected = stats.rejected + 1 %}
+        {% endif %}
+    {% endfor %}
+
+    <div class="shell">
+        <header class="topbar">
+            <div class="brand">
+                <p class="eyebrow">Campus Automation</p>
+                <h1 class="title">Leave Review Center</h1>
+                <p class="subtitle">Review every student leave request from one premium workspace with cleaner decisions, better status visibility, and faster document handling.</p>
+            </div>
+            <div class="top-actions">
+                <a class="pill-link secondary" href="/admin">Admin Home</a>
+                <a class="pill-link primary" href="/logout">Logout</a>
+            </div>
+        </header>
+
+        <section class="stats">
+            <div class="panel stat-card">
+                <span>Total requests</span>
+                <strong>{{ stats.total }}</strong>
+            </div>
+            <div class="panel stat-card">
+                <span>Pending</span>
+                <strong>{{ stats.pending }}</strong>
+            </div>
+            <div class="panel stat-card">
+                <span>Approved</span>
+                <strong>{{ stats.approved }}</strong>
+            </div>
+            <div class="panel stat-card">
+                <span>Rejected</span>
+                <strong>{{ stats.rejected }}</strong>
+            </div>
+        </section>
+
+        <section class="panel section">
+            <div class="section-head">
+                <h2>All Leave Requests</h2>
+                <p>Approve or reject pending requests and download approved letters.</p>
+            </div>
+
+            {% if leaves %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Raw Message</th>
+                            <th>Reason</th>
+                            <th>Category</th>
+                            <th>Time Slot</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for leave in leaves %}
+                        {% set status = leave[5]|lower %}
+                        <tr>
+                            <td>#{{ leave[0] }}</td>
+                            <td>{{ leave[1] }}</td>
+                            <td>{{ leave[6] or "-" }}</td>
+                            <td>{{ leave[2] }}</td>
+                            <td>{{ (leave[7] or "general")|replace("_", " ")|title }}</td>
+                            <td>{{ (leave[8] or "full_day")|replace("_", " ")|title }}</td>
+                            <td>{{ leave[3] }}</td>
+                            <td>{{ leave[4] }}</td>
+                            <td><span class="status status-{{ status }}">{{ leave[5] }}</span></td>
+                            <td>
+                                <div class="action-stack">
+                                    {% if status == "pending" %}
+                                    <form class="inline-form" method="post" action="/admin/approve-leave">
+                                        <input type="hidden" name="id" value="{{ leave[0] }}">
+                                        <button class="btn btn-approve" type="submit">Approve</button>
+                                    </form>
+
+                                    <form class="inline-form" method="post" action="/admin/reject-leave">
+                                        <input type="hidden" name="id" value="{{ leave[0] }}">
+                                        <button class="btn btn-reject" type="submit">Reject</button>
+                                    </form>
+                                    {% elif status == "approved" %}
+                                    <a class="btn btn-download" href="/admin/download-leave/{{ leave[0] }}">Download PDF</a>
+                                    {% else %}
+                                    <span class="status status-rejected">Closed</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty">No leave requests are available right now.</div>
+            {% endif %}
+        </section>
+    </div>
+</body>
+</html>
