@@ -1,13 +1,16 @@
 from fastapi.responses import RedirectResponse
 from fastapi import APIRouter, Request, Form
 from fastapi.templating import Jinja2Templates
+from pathlib import Path
+from app.utils.safe_templates import get_templates
 from urllib.parse import quote
 from app.services.intent_service import detect_intent, extract_leave_details
 from app.services.leave_service import apply_leave
 from app.services.bonafide_service import generate_bonafide
 
 router = APIRouter()
-templates = Jinja2Templates(directory="templates")
+BASE_DIR = Path(__file__).resolve().parents[2]
+templates = get_templates(BASE_DIR / "templates")
 
 
 @router.post("/chat")

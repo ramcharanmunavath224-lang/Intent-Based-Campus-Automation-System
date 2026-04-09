@@ -1,10 +1,12 @@
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
+from pathlib import Path
 from app.services.auth_service import authenticate_user
+from app.utils.safe_templates import get_templates
 
 router = APIRouter()
-templates = Jinja2Templates(directory="templates")
+BASE_DIR = Path(__file__).resolve().parents[2]
+templates = get_templates(BASE_DIR / "templates")
 
 # ✅ root → redirect
 @router.get("/")
@@ -14,7 +16,7 @@ def home():
 # ✅ login page
 @router.get("/login", response_class=HTMLResponse)
 def login_page(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    return templates.TemplateResponse(request, "login.html")
 
 # ✅ login logic
 @router.post("/login")
@@ -37,6 +39,5 @@ def login(request: Request, username: str = Form(...), password: str = Form(...)
             return RedirectResponse("/student", status_code=303)
 
     return templates.TemplateResponse(
-        "login.html",
-        {"request": request, "error": "Invalid Credentials"}
+        request, "login.html", {"error": "Invalid credentials"}
     )

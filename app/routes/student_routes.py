@@ -5,13 +5,14 @@ from fastapi.responses import Response
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+from app.utils.safe_templates import get_templates
 
 from app.database import get_db
 from app.services.pdf_service import generate_leave_letter_pdf_bytes
 
 router = APIRouter()
-templates = Jinja2Templates(directory="templates")
 BASE_DIR = Path(__file__).resolve().parents[2]
+templates = get_templates(BASE_DIR / "templates")
 UPLOADS_DIR = BASE_DIR / "uploads"
 
 
@@ -42,8 +43,7 @@ def student_page(request: Request):
     bonafide_path = UPLOADS_DIR / f"{username}_bonafide.pdf"
     bonafide_ready = bonafide_path.exists()
 
-    return templates.TemplateResponse("student.html", {
-        "request": request,
+    return templates.TemplateResponse(request, "student.html", {
         "username": username,
         "leaves": leaves,
         "msg": msg,

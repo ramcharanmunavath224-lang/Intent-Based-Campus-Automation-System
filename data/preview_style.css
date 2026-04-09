@@ -1,0 +1,186 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* BACKGROUND */
+body {
+    height: 100vh;
+    font-family: 'Segoe UI', sans-serif;
+    overflow: hidden;
+}
+
+/* Animated gradient */
+.background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, #1e3c72, #2a5298, #6a11cb);
+    background-size: 300% 300%;
+    animation: gradientMove 10s ease infinite;
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* LOGIN CARD */
+.login-card {
+    position: relative;
+    width: 380px;
+    margin: auto;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 40px;
+    border-radius: 15px;
+
+    backdrop-filter: blur(20px);
+    background: rgba(255,255,255,0.1);
+
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    text-align: center;
+    color: white;
+}
+
+/* TITLE */
+.login-card h1 {
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.subtitle {
+    margin-bottom: 30px;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+/* INPUT GROUP */
+.input-group {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 8px;
+    outline: none;
+    color: white;
+    font-size: 14px;
+}
+
+.input-group label {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    pointer-events: none;
+    transition: 0.3s;
+}
+
+/* FLOATING LABEL */
+.input-group input:focus + label,
+.input-group input:valid + label {
+    top: -8px;
+    left: 8px;
+    font-size: 11px;
+    background: #1e3c72;
+    padding: 0 5px;
+}
+
+/* BUTTON */
+button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(45deg, #00c6ff, #0072ff);
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+}
+
+/* FOOTER */
+.footer {
+    margin-top: 20px;
+    font-size: 12px;
+    opacity: 0.7;
+}
+/* Dashboard Layout */
+.dashboard {
+    display: flex;
+    height: 100vh;
+    font-family: Arial;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 220px;
+    background: #0f172a;
+    color: white;
+    padding: 20px;
+}
+
+.sidebar h2 {
+    margin-bottom: 20px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.sidebar ul li:hover {
+    background: #1e293b;
+}
+
+/* Main */
+.main {
+    flex: 1;
+    padding: 40px;
+    background: #f1f5f9;
+}
+
+/* Card */
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 400px;
+}
+
+/* Inputs */
+input, select {
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+}
+
+/* Button */
+button {
+    width: 100%;
+    padding: 10px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    cursor: pointer;
+}

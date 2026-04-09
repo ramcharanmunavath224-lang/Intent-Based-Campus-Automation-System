@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+import os
+from app.utils.safe_templates import get_templates
 
 from app.models import init_db
 
@@ -15,9 +17,11 @@ app = FastAPI(title="Intent-Based Campus Automation")
 
 app.add_middleware(SessionMiddleware, secret_key="mysecretkey123")
 
-# ✅ Static & templates
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+# ✅ Static & templates - use absolute paths
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
+# use safe templates helper (centralized)
+templates = get_templates(os.path.join(BASE_DIR, "templates"))
 
 # ✅ Initialize DB
 init_db()

@@ -3,13 +3,16 @@ from urllib.parse import quote
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
+from pathlib import Path
+from app.utils.safe_templates import get_templates
 
 from app.database import get_db
 from app.services.auth_service import create_user, delete_user, reset_user_password, update_user_details
 from app.services.pdf_service import generate_leave_letter_pdf_bytes
 
 router = APIRouter()
-templates = Jinja2Templates(directory="templates")
+BASE_DIR = Path(__file__).resolve().parents[2]
+templates = get_templates(BASE_DIR / "templates")
 
 
 @router.get("/admin", response_class=HTMLResponse)
@@ -69,8 +72,7 @@ def admin_page(request: Request):
         selected_user = cursor.fetchone()
 
     msg = request.query_params.get("msg")
-    return templates.TemplateResponse("admin.html", {
-        "request": request,
+    return templates.TemplateResponse(request, "admin.html", {
         "users": users,
         "msg": msg,
         "search": search,
@@ -244,10 +246,7 @@ def view_leaves(request: Request):
     cursor.execute("SELECT * FROM leave_requests")
     leaves = cursor.fetchall()
 
-    return templates.TemplateResponse("admin_leaves.html", {
-        "request": request,
-        "leaves": leaves,
-    })
+    return templates.TemplateResponse(request, "admin_leaves.html", {"leaves": leaves})
 
 
 @router.post("/admin/approve-leave")
