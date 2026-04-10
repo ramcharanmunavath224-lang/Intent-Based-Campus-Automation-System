@@ -27,7 +27,14 @@ def student_page(request: Request):
     db = get_db()
     cursor = db.cursor()
 
-    cursor.execute("SELECT * FROM leave_requests WHERE username=?", (username,))
+    cursor.execute(
+        """
+        SELECT * FROM leave_requests
+        WHERE username=?
+        ORDER BY id DESC
+        """,
+        (username,),
+    )
     leaves = cursor.fetchall()
     cursor.execute(
         """
