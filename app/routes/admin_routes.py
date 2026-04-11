@@ -2,7 +2,6 @@ from urllib.parse import quote
 
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
-from fastapi.templating import Jinja2Templates
 from pathlib import Path
 from app.utils.safe_templates import get_templates
 
